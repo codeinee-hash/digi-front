@@ -171,8 +171,28 @@ export type LayerStatus =
 
 ---
 
+## 🔒 Инфраструктура качества кода (Husky + Prettier + ESLint + Git Hooks)
+
+Для поддержания наивысших стандартов командной разработки и чистоты репозитория настроен автоматизированный пайплайн проверок:
+
+1. **Prettier (`.prettierrc`)**:
+   - `semi: false` — запрет точки с запятой в конце строк;
+   - `singleQuote: true` — одинарные кавычки для строк;
+   - `printWidth: 100`, `tabWidth: 2`.
+2. **ESLint (`eslint.config.js`)**:
+   - `no-console: ['error', { allow: ['warn', 'error'] }]` — блокировка случайного попадания `console.log` в коммиты;
+   - `@typescript-eslint/no-unused-vars` — строгий запрет неиспользуемых переменных и импортов.
+3. **Husky `pre-commit`**:
+   - При попытке `git commit` утилита `lint-staged` форматирует измененные файлы и запускает линтинг. Если в коде есть неиспользуемые переменные или `console.log`, коммит автоматически блокируется.
+4. **Husky `pre-push`**:
+   - Перед отправкой `git push` запускается полная сборка `npm run build` (`tsc -b && vite build`), гарантирующая отсутствие нарушений типизации в масштабе всего проекта.
+
+---
+
 ## 🛠 Скрипты проекта
 
 - `npm run dev` — запуск локального dev-сервера Vite
 - `npm run build` — строгая проверка типов TypeScript (`tsc -b`) и сборка production-бандла
 - `npm run lint` — запуск линтера ESLint
+- `npm run format` — автоформатирование кодовой базы через Prettier
+- `npm run format:check` — проверка соответствия форматированию
