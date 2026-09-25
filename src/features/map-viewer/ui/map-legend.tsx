@@ -1,18 +1,18 @@
-import React from 'react';
-import { useLayersSelector } from '@/features/layer-management';
-import { Card } from '@/shared/ui/card';
-import { Badge } from '@/shared/ui/badge';
-import { Layers } from 'lucide-react';
+import React from 'react'
+import { useLayersSelector } from '@/features/layer-management'
+import { Card } from '@/shared/ui/card'
+import { Badge } from '@/shared/ui/badge'
+import { Layers } from 'lucide-react'
 
 export const MapLegend: React.FC = () => {
   const { layerIds, layers } = useLayersSelector((state) => ({
     layerIds: state.layerIds,
     layers: state.layers,
-  }));
+  }))
 
   const activeLayers = layerIds
     .map((id) => layers[id])
-    .filter((l) => l && l.isEnabled && l.status.type === 'success');
+    .filter((l) => l && l.isEnabled && l.status.type === 'success')
 
   if (activeLayers.length === 0) {
     return (
@@ -25,7 +25,7 @@ export const MapLegend: React.FC = () => {
           Включите слой в панели слева для отображения геопространственных данных
         </p>
       </Card>
-    );
+    )
   }
 
   return (
@@ -42,16 +42,14 @@ export const MapLegend: React.FC = () => {
 
       <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
         {activeLayers.map((l) => {
-          const gradient = l.data?.legendGradient || ['#3182bd', '#fee090', '#a50026'];
+          const gradient = l.data?.legendGradient || ['#3182bd', '#fee090', '#a50026']
           return (
             <div key={l.id} className="space-y-1">
               <div className="flex items-center justify-between text-[11px]">
                 <span className="font-medium text-foreground truncate max-w-36">
                   {l.metadata.name}
                 </span>
-                <span className="text-muted-foreground font-mono text-[10px]">
-                  {l.opacity}%
-                </span>
+                <span className="text-muted-foreground font-mono text-[10px]">{l.opacity}%</span>
               </div>
 
               {/* Цветовой градиент легенды */}
@@ -63,13 +61,17 @@ export const MapLegend: React.FC = () => {
               />
 
               <div className="flex justify-between text-[9px] font-mono text-muted-foreground">
-                <span>{l.data?.min ?? l.metadata.minVal} {l.metadata.unit}</span>
-                <span>{l.data?.max ?? l.metadata.maxVal} {l.metadata.unit}</span>
+                <span>
+                  {l.data?.min ?? l.metadata.minVal} {l.metadata.unit}
+                </span>
+                <span>
+                  {l.data?.max ?? l.metadata.maxVal} {l.metadata.unit}
+                </span>
               </div>
             </div>
-          );
+          )
         })}
       </div>
     </Card>
-  );
-};
+  )
+}

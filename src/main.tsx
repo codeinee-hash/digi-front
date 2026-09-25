@@ -1,13 +1,13 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import './index.css';
-import { App } from '@/app/app';
-import { Providers } from '@/app/providers';
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import './index.css'
+import { App } from '@/app/app'
+import { Providers } from '@/app/providers'
 
-const root = document.getElementById('root');
+const root = document.getElementById('root')
 
 if (!root) {
-  throw new Error('Root element not found');
+  throw new Error('Root element not found')
 }
 
 createRoot(root).render(
@@ -16,4 +16,4 @@ createRoot(root).render(
       <App />
     </Providers>
   </StrictMode>
-);
+)

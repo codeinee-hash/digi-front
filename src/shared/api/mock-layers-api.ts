@@ -1,9 +1,9 @@
-import type { LayerDataPayload } from '../model/layer-types';
+import type { LayerDataPayload } from '../model/layer-types'
 
 export interface FetchLayerOptions {
-  signal?: AbortSignal;
-  delayMs?: number;
-  forceError?: boolean;
+  signal?: AbortSignal
+  delayMs?: number
+  forceError?: boolean
 }
 
 const GRADIENTS: Record<string, string[]> = {
@@ -11,7 +11,7 @@ const GRADIENTS: Record<string, string[]> = {
   'layer-wind': ['#08519c', '#3182bd', '#6baed6', '#bdd7e7', '#eff3ff'],
   'layer-insolation': ['#7a0177', '#c51b8a', '#f768a1', '#fbb4b9', '#feebe2', '#fff7bc', '#d95f0e'],
   default: ['#00441b', '#238b45', '#66c2a4', '#b2e2e2', '#edf8fb'],
-};
+}
 
 /**
  * Имитирует асинхронный сетевой запрос к GIS API с поддержкой AbortSignal и искусственных ошибок
@@ -20,27 +20,27 @@ export async function fetchLayerMock(
   layerId: string,
   options: FetchLayerOptions = {}
 ): Promise<LayerDataPayload> {
-  const { signal, delayMs = Math.floor(Math.random() * 500) + 700, forceError = false } = options;
+  const { signal, delayMs = Math.floor(Math.random() * 500) + 700, forceError = false } = options
 
   if (signal?.aborted) {
-    throw new DOMException('The user aborted a request.', 'AbortError');
+    throw new DOMException('The user aborted a request.', 'AbortError')
   }
 
   await new Promise<void>((resolve, reject) => {
-    let timer: ReturnType<typeof setTimeout> | null = null;
+    let timer: ReturnType<typeof setTimeout> | null = null
 
     const onAbort = () => {
-      if (timer) clearTimeout(timer);
-      if (signal) signal.removeEventListener('abort', onAbort);
-      reject(new DOMException('The user aborted a request.', 'AbortError'));
-    };
+      if (timer) clearTimeout(timer)
+      if (signal) signal.removeEventListener('abort', onAbort)
+      reject(new DOMException('The user aborted a request.', 'AbortError'))
+    }
 
     if (signal) {
-      signal.addEventListener('abort', onAbort);
+      signal.addEventListener('abort', onAbort)
     }
 
     timer = setTimeout(() => {
-      if (signal) signal.removeEventListener('abort', onAbort);
+      if (signal) signal.removeEventListener('abort', onAbort)
 
       if (forceError) {
         const errorMessages = [
@@ -48,16 +48,16 @@ export async function fetchLayerMock(
           '503 Service Unavailable: Спутниковый кластер временно перегружен',
           'ERR_NETWORK: Ошибка передачи NetCDF растровых матриц',
           '429 Too Many Requests: Превышен лимит запросов к тайловому сервису',
-        ];
-        const randomError = errorMessages[Math.floor(Math.random() * errorMessages.length)];
-        reject(new Error(randomError));
+        ]
+        const randomError = errorMessages[Math.floor(Math.random() * errorMessages.length)]
+        reject(new Error(randomError))
       } else {
-        resolve();
+        resolve()
       }
-    }, delayMs);
-  });
+    }, delayMs)
+  })
 
-  const gradient = GRADIENTS[layerId] || GRADIENTS.default;
+  const gradient = GRADIENTS[layerId] || GRADIENTS.default
 
   return {
     layerId,
@@ -68,5 +68,5 @@ export async function fetchLayerMock(
     max: layerId === 'layer-temperature' ? 38 : layerId === 'layer-wind' ? 28 : 980,
     unit: layerId === 'layer-temperature' ? '°C' : layerId === 'layer-wind' ? 'м/с' : 'Вт/м²',
     legendGradient: gradient,
-  };
+  }
 }

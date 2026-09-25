@@ -1,21 +1,13 @@
-import React, { useMemo } from 'react';
-import { useLayersSelector } from '../model/layer-store';
-import { useLayerActions } from '../model/use-layer-actions';
-import { LayerItem } from './layer-item';
-import { Input } from '@/shared/ui/input';
-import { Button } from '@/shared/ui/button';
-import { Badge } from '@/shared/ui/badge';
-import { Switch } from '@/shared/ui/switch';
-import {
-  Search,
-  SlidersHorizontal,
-  Layers,
-  Bug,
-  CheckCheck,
-  XCircle,
-  Zap,
-} from 'lucide-react';
-import type { LayerCategory } from '@/shared/model/layer-types';
+import React, { useMemo } from 'react'
+import { useLayersSelector } from '../model/layer-store'
+import { useLayerActions } from '../model/use-layer-actions'
+import { LayerItem } from './layer-item'
+import { Input } from '@/shared/ui/input'
+import { Button } from '@/shared/ui/button'
+import { Badge } from '@/shared/ui/badge'
+import { Switch } from '@/shared/ui/switch'
+import { Search, SlidersHorizontal, Layers, Bug, CheckCheck, XCircle, Zap } from 'lucide-react'
+import type { LayerCategory } from '@/shared/model/layer-types'
 
 const CATEGORIES: Array<{ key: LayerCategory | 'all'; label: string }> = [
   { key: 'all', label: 'Все' },
@@ -23,7 +15,7 @@ const CATEGORIES: Array<{ key: LayerCategory | 'all'; label: string }> = [
   { key: 'energy', label: 'Энергетика' },
   { key: 'satellite', label: 'Спутники' },
   { key: 'ecology', label: 'Экология' },
-];
+]
 
 export const LayerList: React.FC = () => {
   const { layerIds, searchQuery, selectedCategory, datasetMode, simulateErrors } =
@@ -33,9 +25,9 @@ export const LayerList: React.FC = () => {
       selectedCategory: state.selectedCategory,
       datasetMode: state.datasetMode,
       simulateErrors: state.simulateErrors,
-    }));
+    }))
 
-  const layersRecord = useLayersSelector((state) => state.layers);
+  const layersRecord = useLayersSelector((state) => state.layers)
 
   const {
     setSearchQuery,
@@ -43,49 +35,49 @@ export const LayerList: React.FC = () => {
     switchDatasetMode,
     toggleSimulateErrors,
     batchToggleAll,
-  } = useLayerActions();
+  } = useLayerActions()
 
   // Вычисляем общую статистику
   const stats = useMemo(() => {
-    let active = 0;
-    let loading = 0;
-    let error = 0;
+    let active = 0
+    let loading = 0
+    let error = 0
 
     for (const id of layerIds) {
-      const l = layersRecord[id];
+      const l = layersRecord[id]
       if (l) {
-        if (l.isEnabled) active++;
-        if (l.status.type === 'loading') loading++;
-        if (l.status.type === 'error') error++;
+        if (l.isEnabled) active++
+        if (l.status.type === 'loading') loading++
+        if (l.status.type === 'error') error++
       }
     }
 
-    return { total: layerIds.length, active, loading, error };
-  }, [layerIds, layersRecord]);
+    return { total: layerIds.length, active, loading, error }
+  }, [layerIds, layersRecord])
 
   // Фильтрация слоев по поиску и категории
   const filteredIds = useMemo(() => {
     return layerIds.filter((id) => {
-      const layer = layersRecord[id];
-      if (!layer) return false;
+      const layer = layersRecord[id]
+      if (!layer) return false
 
       // Фильтр по категории
       if (selectedCategory !== 'all' && layer.metadata.category !== selectedCategory) {
-        return false;
+        return false
       }
 
       // Фильтр по поисковому запросу
       if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase();
-        const matchName = layer.metadata.name.toLowerCase().includes(q);
-        const matchCode = layer.metadata.code.toLowerCase().includes(q);
-        const matchDesc = layer.metadata.description.toLowerCase().includes(q);
-        if (!matchName && !matchCode && !matchDesc) return false;
+        const q = searchQuery.toLowerCase()
+        const matchName = layer.metadata.name.toLowerCase().includes(q)
+        const matchCode = layer.metadata.code.toLowerCase().includes(q)
+        const matchDesc = layer.metadata.description.toLowerCase().includes(q)
+        if (!matchName && !matchCode && !matchDesc) return false
       }
 
-      return true;
-    });
-  }, [layerIds, layersRecord, searchQuery, selectedCategory]);
+      return true
+    })
+  }, [layerIds, layersRecord, searchQuery, selectedCategory])
 
   return (
     <div className="flex flex-col h-full bg-background border-r border-border">
@@ -222,18 +214,18 @@ export const LayerList: React.FC = () => {
 
       {/* Нижний статус-бар */}
       <div className="p-2.5 border-t border-border bg-muted/40 text-[11px] text-muted-foreground flex items-center justify-between shrink-0">
-        <span>Показано: {filteredIds.length} из {stats.total}</span>
+        <span>
+          Показано: {filteredIds.length} из {stats.total}
+        </span>
         {stats.loading > 0 && (
           <span className="text-blue-500 font-medium animate-pulse">
             Загружается: {stats.loading}...
           </span>
         )}
         {stats.error > 0 && (
-          <span className="text-destructive font-medium">
-            Сбоев: {stats.error}
-          </span>
+          <span className="text-destructive font-medium">Сбоев: {stats.error}</span>
         )}
       </div>
     </div>
-  );
-};
+  )
+}

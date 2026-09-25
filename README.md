@@ -8,12 +8,14 @@
 ## 🚀 Демонстрация возможностей
 
 Приложение доступно локально на Vite Dev Server:
+
 ```bash
 npm install
 npm run dev
 ```
 
 ### Реализованный функционал согласно ТЗ:
+
 1. **Базовые слои ТЗ**:
    - 🌡 **Температура поверхности** (`TEMP_SURFACE_2M`) — тепловой растр на высоте 2 м;
    - 💨 **Векторное поле ветра** (`WIND_VECTORS_10M`) — скорость и векторные потоки частиц;
@@ -27,7 +29,7 @@ npm run dev
 3. **Масштабируемость от 3 до 100+ слоев**:
    - В шапке встроен тумблер: **«3 слоя (ТЗ)»** ⇄ **«100+ слоёв (Стресс-тест)»**;
    - Полнотекстовый поиск по названию и коду слоя;
-   - Фильтрация по категориям: *Атмосфера, Энергетика, Спутники, Экология*;
+   - Фильтрация по категориям: _Атмосфера, Энергетика, Спутники, Экология_;
    - Массовые действия: «Включить все» / «Сбросить все».
 4. **Интерактивная карта Чуйского региона (г. Бишкек)**:
    - Реализован Canvas-движок карты с географической привязкой к штаб-квартире DiGi в Бишкеке (42.87° N, 74.57° E);
@@ -94,21 +96,22 @@ src/
 Библиотека `vedro` решает ключевую проблему стандартного `React.Context` — каскадные лишние перерендеры дочерних компонентов.
 
 ### Как это устроено в проекте:
+
 1. **Нормализованный стейт**:
    ```ts
    interface LayersStoreState {
-     layers: Record<string, LayerState>; // Хранение слоев по id
-     layerIds: string[];                 // Массив идентификаторов
-     searchQuery: string;
-     selectedCategory: LayerCategory | 'all';
-     simulateErrors: boolean;
-     datasetMode: '3-layers' | '100-layers';
+     layers: Record<string, LayerState> // Хранение слоев по id
+     layerIds: string[] // Массив идентификаторов
+     searchQuery: string
+     selectedCategory: LayerCategory | 'all'
+     simulateErrors: boolean
+     datasetMode: '3-layers' | '100-layers'
    }
    ```
 2. **Гранулярная подписка в `LayerItem`**:
    Каждый компонент слоя подписывается исключительно на свой срез:
    ```tsx
-   const layer = useLayersSelector((state) => state.layers[layerId]);
+   const layer = useLayersSelector((state) => state.layers[layerId])
    ```
    Внутри `vedro` выполняется пошаговая проверка результата селектора (`JSON.stringify(prev) === JSON.stringify(next)`). При изменении прозрачности слоя «Температура» селекторы слоев «Ветер» и «Инсоляция» возвращают неизменные данные, и **React не производит повторный рендер соседних компонентов**.
 3. **Визуальный счетчик рендеров**:
@@ -121,7 +124,9 @@ src/
 При работе с интерактивными GIS-системами пользователи часто совершают быстрые серии кликов: включение ➔ выключение ➔ повторное включение, либо многократное нажатие Retry. Без надлежащей архитектуры устаревший медленный сетевой ответ перетрет актуальное состояние (Race Condition).
 
 ### Инженерное решение:
+
 В модуле [`src/shared/lib/abort-manager.ts`](file:///Users/eldiyar/dev/frontend/test-task-digi/src/shared/lib/abort-manager.ts) реализован `LayerAbortManager`:
+
 1. **Мгновенный Abort при повторном действии**:
    При вызове `toggleLayer(id, true)` или `retryLayer(id)` менеджер проверяет наличие активного сетевого запроса для этого слоя и немедленно вызывает `controller.abort()`.
 2. **Монотонный `requestId`**:
@@ -144,7 +149,7 @@ export type LayerStatus =
   | { type: 'idle' }
   | { type: 'loading'; startedAt: number }
   | { type: 'success'; loadedAt: number; dataPointsCount: number }
-  | { type: 'error'; message: string; canRetry: boolean; failedAt: number };
+  | { type: 'error'; message: string; canRetry: boolean; failedAt: number }
 ```
 
 Код полностью проходит валидацию `tsc --noEmit` и `eslint .` без единого предупреждения о типах.

@@ -1,11 +1,12 @@
-import type { LayerMetadata, LayerState } from './layer-types';
+import type { LayerMetadata, LayerState } from './layer-types'
 
 export const PRIMARY_LAYERS: LayerMetadata[] = [
   {
     id: 'layer-temperature',
     name: 'Температура поверхности',
     code: 'TEMP_SURFACE_2M',
-    description: 'Тепловой растр поверхности на высоте 2м по данным реанализа и спутниковой радиометрии',
+    description:
+      'Тепловой растр поверхности на высоте 2м по данным реанализа и спутниковой радиометрии',
     category: 'atmosphere',
     unit: '°C',
     minVal: -25,
@@ -27,14 +28,15 @@ export const PRIMARY_LAYERS: LayerMetadata[] = [
     id: 'layer-insolation',
     name: 'Солнечная инсоляция',
     code: 'SOLAR_GHI_IRRADIANCE',
-    description: 'Суммарная глобальная горизонтальная радиация (GHI) для экологии и солнечной энергетики',
+    description:
+      'Суммарная глобальная горизонтальная радиация (GHI) для экологии и солнечной энергетики',
     category: 'energy',
     unit: 'Вт/м²',
     minVal: 0,
     maxVal: 1100,
     colorScheme: 'solar',
   },
-];
+]
 
 export const createDefaultLayerState = (metadata: LayerMetadata): LayerState => ({
   id: metadata.id,
@@ -43,29 +45,34 @@ export const createDefaultLayerState = (metadata: LayerMetadata): LayerState => 
   opacity: 80,
   status: { type: 'idle' },
   data: null,
-});
+})
 
 export const INITIAL_PRIMARY_LAYERS_RECORD: Record<string, LayerState> = PRIMARY_LAYERS.reduce(
   (acc, meta) => {
-    acc[meta.id] = createDefaultLayerState(meta);
-    return acc;
+    acc[meta.id] = createDefaultLayerState(meta)
+    return acc
   },
   {} as Record<string, LayerState>
-);
+)
 
-export const INITIAL_PRIMARY_LAYER_IDS = PRIMARY_LAYERS.map((l) => l.id);
+export const INITIAL_PRIMARY_LAYER_IDS = PRIMARY_LAYERS.map((l) => l.id)
 
 /**
  * Генератор масштабируемого каталога слоев (для проверки производительности 5 -> 100+ слоев)
  */
 export function generateLayersDataset(totalCount: number = 100): {
-  layers: Record<string, LayerState>;
-  layerIds: string[];
+  layers: Record<string, LayerState>
+  layerIds: string[]
 } {
-  const layers: Record<string, LayerState> = { ...INITIAL_PRIMARY_LAYERS_RECORD };
-  const layerIds: string[] = [...INITIAL_PRIMARY_LAYER_IDS];
+  const layers: Record<string, LayerState> = { ...INITIAL_PRIMARY_LAYERS_RECORD }
+  const layerIds: string[] = [...INITIAL_PRIMARY_LAYER_IDS]
 
-  const categories: Array<LayerMetadata['category']> = ['atmosphere', 'energy', 'satellite', 'ecology'];
+  const categories: Array<LayerMetadata['category']> = [
+    'atmosphere',
+    'energy',
+    'satellite',
+    'ecology',
+  ]
   const prefixes = [
     'Влажность почвы',
     'Осадки радарные',
@@ -77,13 +84,13 @@ export function generateLayersDataset(totalCount: number = 100): {
     'Атмосферное давление',
     'УФ-индекс',
     'Снежный покров',
-  ];
+  ]
 
   for (let i = layerIds.length; i < totalCount; i++) {
-    const prefix = prefixes[i % prefixes.length];
-    const zoneNum = Math.floor(i / prefixes.length) + 1;
-    const id = `layer-gis-${i + 1}`;
-    const category = categories[i % categories.length];
+    const prefix = prefixes[i % prefixes.length]
+    const zoneNum = Math.floor(i / prefixes.length) + 1
+    const id = `layer-gis-${i + 1}`
+    const category = categories[i % categories.length]
 
     const meta: LayerMetadata = {
       id,
@@ -95,11 +102,11 @@ export function generateLayersDataset(totalCount: number = 100): {
       minVal: 0,
       maxVal: 100,
       colorScheme: i % 3 === 0 ? 'satellite' : 'default',
-    };
+    }
 
-    layers[id] = createDefaultLayerState(meta);
-    layerIds.push(id);
+    layers[id] = createDefaultLayerState(meta)
+    layerIds.push(id)
   }
 
-  return { layers, layerIds };
+  return { layers, layerIds }
 }

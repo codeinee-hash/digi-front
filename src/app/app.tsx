@@ -1,8 +1,8 @@
-import React from 'react';
-import { LayerList } from '@/features/layer-management';
-import { MapCanvas } from '@/features/map-viewer';
-import { Badge } from '@/shared/ui/badge';
-import { Globe2, ShieldCheck, Cpu } from 'lucide-react';
+import React from 'react'
+import { LayerList } from '@/features/layer-management'
+import { MapCanvas } from '@/features/map-viewer'
+import { Badge } from '@/shared/ui/badge'
+import { Globe2, ShieldCheck, Cpu } from 'lucide-react'
 
 export const App: React.FC = () => {
   return (
@@ -15,9 +15,7 @@ export const App: React.FC = () => {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-sm font-bold tracking-tight text-foreground">
-                DiGi GeoPlatform
-              </h1>
+              <h1 className="text-sm font-bold tracking-tight text-foreground">DiGi GeoPlatform</h1>
               <span className="text-xs text-muted-foreground hidden sm:inline">•</span>
               <span className="text-xs text-muted-foreground hidden sm:inline">
                 Интерфейс управления картографическими слоями
@@ -62,5 +60,5 @@ export const App: React.FC = () => {
         </section>
       </main>
     </div>
-  );
-};
+  )
+}
