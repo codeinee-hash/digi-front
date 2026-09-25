@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react'
 import { useLayersSelector } from '@/features/layer-management'
 import { MapLegend } from './map-legend'
+import { MapViewerLayout } from './map-viewer-layout'
 import { Button } from '@/shared/ui/button'
 import { Badge } from '@/shared/ui/badge'
 import { ZoomIn, ZoomOut, RotateCcw, Compass, Grid, Crosshair, MapPin } from 'lucide-react'
@@ -243,36 +244,33 @@ export const MapCanvas: React.FC = () => {
   )
 
   return (
-    <div
-      ref={containerRef}
+    <MapViewerLayout
+      containerRef={containerRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={() => setCursorCoords(null)}
-      className="relative w-full h-full min-h-[500px] overflow-hidden bg-slate-950 select-none"
-    >
-      <canvas ref={canvasRef} className="absolute inset-0 block w-full h-full cursor-crosshair" />
+      hud={
+        <>
+          <Badge
+            variant="secondary"
+            className="bg-background/80 backdrop-blur-md border border-border/80 text-foreground text-xs gap-1.5 shadow-md px-2.5 py-1"
+          >
+            <Compass className="size-3.5 text-primary animate-pulse" />
+            <span className="font-mono">WGS 84 / EPSG:3857</span>
+            <span className="text-muted-foreground">|</span>
+            <span className="font-mono text-[11px]">Z: {zoom.toFixed(1)}</span>
+          </Badge>
 
-      <div className="absolute top-4 left-4 z-10 flex items-center gap-2 pointer-events-none">
-        <Badge
-          variant="secondary"
-          className="bg-background/80 backdrop-blur-md border border-border/80 text-foreground text-xs gap-1.5 shadow-md px-2.5 py-1"
-        >
-          <Compass className="size-3.5 text-primary animate-pulse" />
-          <span className="font-mono">WGS 84 / EPSG:3857</span>
-          <span className="text-muted-foreground">|</span>
-          <span className="font-mono text-[11px]">Z: {zoom.toFixed(1)}</span>
-        </Badge>
-
-        <Badge
-          variant="secondary"
-          className="bg-background/80 backdrop-blur-md border border-border/80 text-foreground text-xs gap-1 shadow-md px-2.5 py-1"
-        >
-          <MapPin className="size-3 text-sky-500" />
-          <span>Чуйский регион, КР</span>
-        </Badge>
-      </div>
-
-      {cursorCoords && (
-        <div className="absolute bottom-4 left-4 z-10 pointer-events-none">
+          <Badge
+            variant="secondary"
+            className="bg-background/80 backdrop-blur-md border border-border/80 text-foreground text-xs gap-1 shadow-md px-2.5 py-1"
+          >
+            <MapPin className="size-3 text-sky-500" />
+            <span>Чуйский регион, КР</span>
+          </Badge>
+        </>
+      }
+      cursor={
+        cursorCoords && (
           <Badge
             variant="secondary"
             className="bg-background/90 backdrop-blur-md border border-border/80 text-foreground text-xs gap-2 font-mono shadow-md px-3 py-1"
@@ -281,10 +279,9 @@ export const MapCanvas: React.FC = () => {
             <span>Lat: {cursorCoords.lat}° N</span>
             <span>Lon: {cursorCoords.lon}° E</span>
           </Badge>
-        </div>
-      )}
-
-      <div className="absolute top-4 right-4 z-10 flex flex-col gap-1.5">
+        )
+      }
+      controls={
         <div className="bg-background/90 backdrop-blur-md border border-border/80 rounded-lg p-1 shadow-lg flex flex-col gap-1">
           <Button
             variant="ghost"
@@ -327,11 +324,10 @@ export const MapCanvas: React.FC = () => {
             <Grid className="size-3.5" />
           </Button>
         </div>
-      </div>
-
-      <div className="absolute bottom-4 right-4 z-10">
-        <MapLegend />
-      </div>
-    </div>
+      }
+      legend={<MapLegend />}
+    >
+      <canvas ref={canvasRef} className="absolute inset-0 block w-full h-full cursor-crosshair" />
+    </MapViewerLayout>
   )
 }
