@@ -5,17 +5,13 @@ import { Button } from '@/shared/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/shared/ui/tooltip'
 import { Loader2, CheckCircle2, AlertTriangle, RotateCcw } from 'lucide-react'
 
-interface LayerStatusBadgeProps {
+interface Props {
   status: LayerStatus
   isEnabled: boolean
   onRetry?: () => void
 }
 
-export const LayerStatusBadge: React.FC<LayerStatusBadgeProps> = ({
-  status,
-  isEnabled,
-  onRetry,
-}) => {
+export const LayerStatusBadge: React.FC<Props> = ({ status, isEnabled, onRetry }) => {
   if (!isEnabled) {
     return (
       <Badge variant="outline" className="text-xs text-muted-foreground border-dashed">
