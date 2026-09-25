@@ -23,16 +23,13 @@ export const MapCanvas: React.FC = () => {
     screenY: number
   } | null>(null)
 
-  // Центр карты: Бишкек / Чуйская долина (как раз офис и регион DiGi)
   const baseLat = 42.8746
   const baseLon = 74.5698
 
-  // Анимация частиц ветра
   const windParticlesRef = useRef<
     Array<{ x: number; y: number; speed: number; length: number; age: number; maxAge: number }>
   >([])
 
-  // Инициализация частиц ветра
   useEffect(() => {
     const particles = []
     for (let i = 0; i < 90; i++) {
@@ -48,7 +45,6 @@ export const MapCanvas: React.FC = () => {
     windParticlesRef.current = particles
   }, [])
 
-  // Отрисовка геопространственного холста и слоев
   useEffect(() => {
     let animationFrameId: number
     const canvas = canvasRef.current
@@ -63,11 +59,9 @@ export const MapCanvas: React.FC = () => {
       const width = canvas.width
       const height = canvas.height
 
-      // 1. Очистка и отрисовка GIS-базовой карты (Dark Topo Basemap)
-      ctx.fillStyle = '#0f172a' // глубокий темно-синий slate
+      ctx.fillStyle = '#0f172a'
       ctx.fillRect(0, 0, width, height)
 
-      // Сетка координат (WGS 84 / Web Mercator)
       if (showGrid) {
         ctx.strokeStyle = 'rgba(148, 163, 184, 0.08)'
         ctx.lineWidth = 1
@@ -86,7 +80,6 @@ export const MapCanvas: React.FC = () => {
         }
       }
 
-      // Топографические контуры (рельеф гор Ала-Тоо на юге Бишкека)
       ctx.save()
       ctx.strokeStyle = 'rgba(71, 85, 105, 0.25)'
       ctx.lineWidth = 1.5
@@ -102,7 +95,6 @@ export const MapCanvas: React.FC = () => {
       }
       ctx.restore()
 
-      // 2. Отрисовка активных слоев с учетом прозрачности (opacity)
       layerIds.forEach((id) => {
         const layer = layers[id]
         if (!layer || !layer.isEnabled || layer.status.type !== 'success') return
@@ -111,7 +103,6 @@ export const MapCanvas: React.FC = () => {
         ctx.save()
         ctx.globalAlpha = alpha
 
-        // Слой Температуры (Тепловая матрица / Thermal Heatmap)
         if (id === 'layer-temperature') {
           ctx.globalCompositeOperation = 'screen'
           const grad = ctx.createRadialGradient(
@@ -122,23 +113,19 @@ export const MapCanvas: React.FC = () => {
             height * 0.45,
             width * 0.45
           )
-          grad.addColorStop(0, 'rgba(239, 68, 68, 0.85)') // горячий центр
+          grad.addColorStop(0, 'rgba(239, 68, 68, 0.85)')
           grad.addColorStop(0.35, 'rgba(245, 158, 11, 0.7)')
           grad.addColorStop(0.65, 'rgba(59, 130, 246, 0.5)')
           grad.addColorStop(1, 'rgba(30, 58, 138, 0)')
           ctx.fillStyle = grad
           ctx.fillRect(0, 0, width, height)
 
-          // Изотермы
           ctx.strokeStyle = 'rgba(254, 240, 138, 0.4)'
           ctx.lineWidth = 1.2
           ctx.beginPath()
           ctx.arc(width * 0.45, height * 0.4, width * 0.25, 0, Math.PI * 2)
           ctx.stroke()
-        }
-
-        // Слой Ветра (Векторные потоки частиц / Streamlines)
-        else if (id === 'layer-wind') {
+        } else if (id === 'layer-wind') {
           ctx.strokeStyle = 'rgba(56, 189, 248, 0.85)'
           ctx.lineWidth = 1.8
           ctx.lineCap = 'round'
@@ -151,7 +138,6 @@ export const MapCanvas: React.FC = () => {
             ctx.lineTo(p.x + dx, p.y + dy)
             ctx.stroke()
 
-            // Движение частиц
             p.x += Math.cos(0.4) * p.speed
             p.y += Math.sin(0.4) * p.speed
             p.age++
@@ -162,10 +148,7 @@ export const MapCanvas: React.FC = () => {
               p.age = 0
             }
           })
-        }
-
-        // Слой Инсоляции (Солнечная радиация GHI / Интенсивность)
-        else if (id === 'layer-insolation') {
+        } else if (id === 'layer-insolation') {
           ctx.globalCompositeOperation = 'lighter'
           const sunX = width * 0.65
           const sunY = height * 0.35
@@ -176,7 +159,6 @@ export const MapCanvas: React.FC = () => {
           ctx.fillStyle = sunGrad
           ctx.fillRect(0, 0, width, height)
 
-          // Концентрические круги радиационного потока
           for (let r = 80; r < 240; r += 50) {
             ctx.strokeStyle = 'rgba(253, 230, 138, 0.25)'
             ctx.setLineDash([4, 6])
@@ -185,10 +167,7 @@ export const MapCanvas: React.FC = () => {
             ctx.stroke()
             ctx.setLineDash([])
           }
-        }
-
-        // Прочие 100+ слои (Спутниковые растры / NDVI / Зоны)
-        else {
+        } else {
           ctx.fillStyle = 'rgba(34, 197, 94, 0.2)'
           ctx.fillRect(width * 0.2, height * 0.2, width * 0.6, height * 0.6)
         }
@@ -196,19 +175,16 @@ export const MapCanvas: React.FC = () => {
         ctx.restore()
       })
 
-      // 3. Маркер центра (Бишкек)
       ctx.save()
       const bishkekX = width * 0.48
       const bishkekY = height * 0.42
 
-      // Пульсирующий ореол
       const pulseSize = 12 + Math.sin(tick * 0.05) * 4
       ctx.fillStyle = 'rgba(14, 165, 233, 0.25)'
       ctx.beginPath()
       ctx.arc(bishkekX, bishkekY, pulseSize, 0, Math.PI * 2)
       ctx.fill()
 
-      // Точка центра
       ctx.fillStyle = '#0284c7'
       ctx.beginPath()
       ctx.arc(bishkekX, bishkekY, 4, 0, Math.PI * 2)
@@ -217,7 +193,6 @@ export const MapCanvas: React.FC = () => {
       ctx.lineWidth = 1.5
       ctx.stroke()
 
-      // Подпись города
       ctx.fillStyle = '#f8fafc'
       ctx.font = '11px sans-serif'
       ctx.fillText('Бишкек (Bishkek HQ)', bishkekX + 8, bishkekY - 6)
@@ -233,7 +208,6 @@ export const MapCanvas: React.FC = () => {
     }
   }, [layerIds, layers, showGrid])
 
-  // Подгонка размера Canvas под контейнер
   useEffect(() => {
     const handleResize = () => {
       if (containerRef.current && canvasRef.current) {
@@ -248,7 +222,6 @@ export const MapCanvas: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  // Инспектор координат при движении мыши
   const handleMouseMove = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       if (!containerRef.current) return
@@ -256,7 +229,6 @@ export const MapCanvas: React.FC = () => {
       const x = e.clientX - rect.left
       const y = e.clientY - rect.top
 
-      // Конвертируем координаты пикселей в географические градусы
       const latOffset = ((rect.height / 2 - y) / rect.height) * 0.4
       const lonOffset = ((x - rect.width / 2) / rect.width) * 0.6
 
@@ -279,7 +251,6 @@ export const MapCanvas: React.FC = () => {
     >
       <canvas ref={canvasRef} className="absolute inset-0 block w-full h-full cursor-crosshair" />
 
-      {/* Верхний инфобар HUD геодезии */}
       <div className="absolute top-4 left-4 z-10 flex items-center gap-2 pointer-events-none">
         <Badge
           variant="secondary"
@@ -300,7 +271,6 @@ export const MapCanvas: React.FC = () => {
         </Badge>
       </div>
 
-      {/* Инспектор курсора в реальном времени */}
       {cursorCoords && (
         <div className="absolute bottom-4 left-4 z-10 pointer-events-none">
           <Badge
@@ -314,7 +284,6 @@ export const MapCanvas: React.FC = () => {
         </div>
       )}
 
-      {/* Кнопки управления масштабом и сеткой карты */}
       <div className="absolute top-4 right-4 z-10 flex flex-col gap-1.5">
         <div className="bg-background/90 backdrop-blur-md border border-border/80 rounded-lg p-1 shadow-lg flex flex-col gap-1">
           <Button
@@ -360,7 +329,6 @@ export const MapCanvas: React.FC = () => {
         </div>
       </div>
 
-      {/* Легенда активных слоев в правом нижнем углу */}
       <div className="absolute bottom-4 right-4 z-10">
         <MapLegend />
       </div>

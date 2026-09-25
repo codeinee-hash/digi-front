@@ -1,16 +1,7 @@
-/**
- * Менеджер управления сигналами отмены (AbortController) для слоев карты.
- * Решает проблему Race Condition при частых переключениях (toggle on -> off -> on)
- * и повторных запросах (retry).
- */
 class LayerAbortManager {
   private controllers = new Map<string, AbortController>()
   private requestIds = new Map<string, number>()
 
-  /**
-   * Начинает новый сетевой цикл для слоя.
-   * Если предыдущий запрос еще выполняется, он немедленно отменяется.
-   */
   beginRequest(layerId: string): { signal: AbortSignal; requestId: number } {
     this.abort(layerId)
 
@@ -23,16 +14,10 @@ class LayerAbortManager {
     return { signal: controller.signal, requestId: nextId }
   }
 
-  /**
-   * Проверяет, является ли requestId актуальным (не устарел ли ответ)
-   */
   isLatestRequest(layerId: string, requestId: number): boolean {
     return this.requestIds.get(layerId) === requestId
   }
 
-  /**
-   * Отменяет текущий активный запрос для конкретного слоя
-   */
   abort(layerId: string): void {
     const active = this.controllers.get(layerId)
     if (active) {
@@ -41,9 +26,6 @@ class LayerAbortManager {
     }
   }
 
-  /**
-   * Отменяет все запросы (например, при переключении датасета или размонтировании)
-   */
   abortAll(): void {
     this.controllers.forEach((ctrl) => {
       ctrl.abort('Cancelled by global reset')
@@ -54,9 +36,6 @@ class LayerAbortManager {
 
 export const layerAbortManager = new LayerAbortManager()
 
-/**
- * Проверка на отмену запроса
- */
 export function isAbortError(error: unknown): boolean {
   if (!error) return false
   if (error instanceof DOMException && error.name === 'AbortError') return true

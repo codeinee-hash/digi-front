@@ -13,9 +13,6 @@ const GRADIENTS: Record<string, string[]> = {
   default: ['#00441b', '#238b45', '#66c2a4', '#b2e2e2', '#edf8fb'],
 }
 
-/**
- * Имитирует асинхронный сетевой запрос к GIS API с поддержкой AbortSignal и искусственных ошибок
- */
 export async function fetchLayerMock(
   layerId: string,
   options: FetchLayerOptions = {}

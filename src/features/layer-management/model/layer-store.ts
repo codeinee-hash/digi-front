@@ -29,30 +29,21 @@ export const {
   useSelector: useLayersSelector,
 } = createVedro<ExtendedLayersStoreState>(initialStoreState)
 
-/**
- * Сервисные действия над хранилищем (инкапсулируют бизнес-логику и работу с сетью)
- */
 export const layerActions = {
-  /**
-   * Включение / выключение слоя с защитой от Race Condition через AbortController
-   */
   toggleLayer: (store: ReturnType<typeof useLayersStore>, layerId: string, enabled: boolean) => {
     const state = store.get()
     const currentLayer = state.layers[layerId]
     if (!currentLayer) return
 
     if (!enabled) {
-      // 1. Отменяем активный сетевой запрос, если он шел
       layerAbortManager.abort(layerId)
 
-      // 2. Выключаем слой в стейте
       store.dispatch((s) => ({
         layers: {
           ...s.layers,
           [layerId]: {
             ...s.layers[layerId],
             isEnabled: false,
-            // Если запрос оборвался в полете, возвращаем idle
             status:
               s.layers[layerId].status.type === 'loading'
                 ? { type: 'idle' }
@@ -63,11 +54,8 @@ export const layerActions = {
       return
     }
 
-    // Включение слоя:
-    // Инициируем запрос с новым AbortSignal
     const { signal, requestId } = layerAbortManager.beginRequest(layerId)
 
-    // Устанавливаем статус loading и флаг включен
     store.dispatch((s) => ({
       layers: {
         ...s.layers,
@@ -79,13 +67,11 @@ export const layerActions = {
       },
     }))
 
-    // Вызываем асинхронный mock API
     fetchLayerMock(layerId, {
       signal,
       forceError: store.get().simulateErrors,
     })
       .then((data) => {
-        // Проверяем, что ответ принадлежит именно текущему запросу и слой все еще включен
         if (!layerAbortManager.isLatestRequest(layerId, requestId)) return
         const latestState = store.get()
         if (!latestState.layers[layerId]?.isEnabled) return
@@ -106,12 +92,10 @@ export const layerActions = {
         }))
       })
       .catch((error: unknown) => {
-        // Если запрос был отменен (пользователь быстро выключил слой или перезапустил) — игнорируем ошибку
         if (isAbortError(error)) {
           return
         }
 
-        // Если это устаревший запрос — игнорируем
         if (!layerAbortManager.isLatestRequest(layerId, requestId)) return
 
         const errorMessage =
@@ -134,9 +118,6 @@ export const layerActions = {
       })
   },
 
-  /**
-   * Повторная загрузка слоя после ошибки (Retry)
-   */
   retryLayer: (store: ReturnType<typeof useLayersStore>, layerId: string) => {
     const state = store.get()
     const currentLayer = state.layers[layerId]
@@ -203,9 +184,6 @@ export const layerActions = {
       })
   },
 
-  /**
-   * Регулировка прозрачности (0 - 100)
-   */
   setOpacity: (store: ReturnType<typeof useLayersStore>, layerId: string, opacity: number) => {
     store.dispatch((s) => ({
       layers: {
@@ -218,16 +196,10 @@ export const layerActions = {
     }))
   },
 
-  /**
-   * Поиск по имени и коду слоя
-   */
   setSearchQuery: (store: ReturnType<typeof useLayersStore>, query: string) => {
     store.dispatch({ searchQuery: query })
   },
 
-  /**
-   * Фильтрация по категории
-   */
   setSelectedCategory: (
     store: ReturnType<typeof useLayersStore>,
     category: LayerCategory | 'all'
@@ -235,16 +207,10 @@ export const layerActions = {
     store.dispatch({ selectedCategory: category })
   },
 
-  /**
-   * Переключение симуляции ошибок (для тестирования кнопки повтора)
-   */
   toggleSimulateErrors: (store: ReturnType<typeof useLayersStore>, simulate: boolean) => {
     store.dispatch({ simulateErrors: simulate })
   },
 
-  /**
-   * Переключение между базовыми 3 слоями и 100+ слоями для проверки масштабируемости
-   */
   switchDatasetMode: (
     store: ReturnType<typeof useLayersStore>,
     mode: '3-layers' | '100-layers'
@@ -267,9 +233,6 @@ export const layerActions = {
     }
   },
 
-  /**
-   * Массовое включение / выключение (тест одновременных запросов)
-   */
   batchToggleAll: (store: ReturnType<typeof useLayersStore>, enable: boolean) => {
     const state = store.get()
     state.layerIds.forEach((id) => {

@@ -7,7 +7,6 @@ import { Globe2, ShieldCheck, Cpu } from 'lucide-react'
 export const App: React.FC = () => {
   return (
     <div className="flex flex-col h-screen w-screen overflow-hidden bg-background text-foreground font-sans antialiased">
-      {/* Верхний навигационный хедер GIS-платформы */}
       <header className="h-13 border-b border-border bg-card/80 backdrop-blur-md px-4 flex items-center justify-between shrink-0 z-20">
         <div className="flex items-center gap-3">
           <div className="size-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center font-bold shadow-sm">
@@ -22,12 +21,11 @@ export const App: React.FC = () => {
               </span>
             </div>
             <p className="text-[10px] text-muted-foreground hidden md:block">
-              React 19 + TypeScript + Vedro State Manager + FSD Architecture
+              React 19 + TypeScript + Vedro State Manager
             </p>
           </div>
         </div>
 
-        {/* Инженерные бейджи для ревьюера тестового задания */}
         <div className="flex items-center gap-2">
           <Badge
             variant="outline"
@@ -47,14 +45,11 @@ export const App: React.FC = () => {
         </div>
       </header>
 
-      {/* Основная рабочая область: Двухколоночный GIS-лейаут */}
       <main className="flex-1 flex flex-col md:flex-row min-h-0 overflow-hidden">
-        {/* Левая панель: Управление картографическими слоями */}
         <aside className="w-full md:w-[420px] lg:w-[450px] shrink-0 h-1/2 md:h-full flex flex-col overflow-hidden">
           <LayerList />
         </aside>
 
-        {/* Правая панель: Интерактивная карта / Визуализатор слоев */}
         <section className="flex-1 h-1/2 md:h-full relative overflow-hidden bg-slate-950">
           <MapCanvas />
         </section>

@@ -37,7 +37,7 @@ export interface LayerState {
   id: string
   metadata: LayerMetadata
   isEnabled: boolean
-  opacity: number // 0 to 100
+  opacity: number
   status: LayerStatus
   data: LayerDataPayload | null
 }
@@ -47,5 +47,5 @@ export interface LayersStoreState {
   layerIds: string[]
   searchQuery: string
   selectedCategory: LayerCategory | 'all'
-  simulateErrors: boolean // Dev toggle to demonstrate retry & error states
+  simulateErrors: boolean
 }

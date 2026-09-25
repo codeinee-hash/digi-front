@@ -52,7 +52,6 @@ export const MapLegend: React.FC = () => {
                 <span className="text-muted-foreground font-mono text-[10px]">{l.opacity}%</span>
               </div>
 
-              {/* Цветовой градиент легенды */}
               <div
                 className="h-2 rounded-full border border-black/10 shadow-2xs"
                 style={{

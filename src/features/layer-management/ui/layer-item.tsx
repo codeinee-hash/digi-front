@@ -31,12 +31,9 @@ const getLayerIcon = (id: string, category: LayerCategory) => {
 
 export const LayerItem: React.FC<LayerItemProps> = React.memo(
   ({ layerId, showRenderCount = true }) => {
-    // Выбираем только данные конкретного слоя из Vedro Store.
-    // Благодаря JSON-сравнению в Vedro, изменения других слоев не вызывают ререндер этого компонента.
     const layer = useLayersSelector((state) => state.layers[layerId])
     const { toggleLayer, setOpacity, retryLayer } = useLayerActions()
 
-    // Счетчик рендеров для наглядной демонстрации отсутствия лишних render'ов
     const renderCountRef = useRef(1)
     useEffect(() => {
       renderCountRef.current += 1
@@ -68,7 +65,6 @@ export const LayerItem: React.FC<LayerItemProps> = React.memo(
         }`}
       >
         <CardContent className="p-4 space-y-3.5">
-          {/* Заголовок и переключатель */}
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-start gap-2.5 min-w-0">
               <div className="p-2 rounded-lg bg-background border shadow-2xs shrink-0 mt-0.5">
@@ -101,7 +97,6 @@ export const LayerItem: React.FC<LayerItemProps> = React.memo(
             </div>
           </div>
 
-          {/* Статус и метрика рендеров */}
           <div className="flex items-center justify-between text-xs pt-1 border-t border-border/40">
             <div className="flex items-center gap-2">
               <span className="text-muted-foreground text-[11px]">Статус:</span>
@@ -110,7 +105,7 @@ export const LayerItem: React.FC<LayerItemProps> = React.memo(
 
             {showRenderCount && (
               <div
-                title="Количество повторных рендеров этого компонента. Доказывает отсутствие лишних render при обновлении других слоев!"
+                title="Количество повторных рендеров этого компонента"
                 className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-muted text-muted-foreground border border-border/40 cursor-help"
               >
                 renders:{' '}
@@ -119,7 +114,6 @@ export const LayerItem: React.FC<LayerItemProps> = React.memo(
             )}
           </div>
 
-          {/* Контрол прозрачности (активен только если слой включен) */}
           {isEnabled && (
             <div className="space-y-1.5 pt-1 animate-in fade-in-50 duration-200">
               <div className="flex items-center justify-between text-xs">

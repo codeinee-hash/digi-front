@@ -37,7 +37,6 @@ export const LayerList: React.FC = () => {
     batchToggleAll,
   } = useLayerActions()
 
-  // Вычисляем общую статистику
   const stats = useMemo(() => {
     let active = 0
     let loading = 0
@@ -55,18 +54,15 @@ export const LayerList: React.FC = () => {
     return { total: layerIds.length, active, loading, error }
   }, [layerIds, layersRecord])
 
-  // Фильтрация слоев по поиску и категории
   const filteredIds = useMemo(() => {
     return layerIds.filter((id) => {
       const layer = layersRecord[id]
       if (!layer) return false
 
-      // Фильтр по категории
       if (selectedCategory !== 'all' && layer.metadata.category !== selectedCategory) {
         return false
       }
 
-      // Фильтр по поисковому запросу
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase()
         const matchName = layer.metadata.name.toLowerCase().includes(q)
@@ -81,7 +77,6 @@ export const LayerList: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full bg-background border-r border-border">
-      {/* Верхняя шапка панели управления */}
       <div className="p-4 border-b border-border space-y-3.5 shrink-0 bg-card/40">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -103,7 +98,6 @@ export const LayerList: React.FC = () => {
           </Badge>
         </div>
 
-        {/* Переключатель режимов датасета (3 слоя ТЗ vs 100 слоев для демонстрации масштабируемости) */}
         <div className="p-2.5 rounded-lg bg-muted/60 border border-border/80 flex items-center justify-between text-xs">
           <div className="flex items-center gap-2">
             <Zap className="size-3.5 text-amber-500" />
@@ -130,7 +124,6 @@ export const LayerList: React.FC = () => {
           </div>
         </div>
 
-        {/* Симуляция ошибок и быстрые действия */}
         <div className="flex items-center justify-between text-xs pt-0.5">
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1.5 cursor-pointer">
@@ -168,7 +161,6 @@ export const LayerList: React.FC = () => {
           </div>
         </div>
 
-        {/* Поиск */}
         <div className="relative">
           <Search className="absolute left-2.5 top-2.5 size-3.5 text-muted-foreground" />
           <Input
@@ -179,7 +171,6 @@ export const LayerList: React.FC = () => {
           />
         </div>
 
-        {/* Фильтр по категориям */}
         <div className="flex items-center gap-1 overflow-x-auto pb-0.5 no-scrollbar">
           {CATEGORIES.map((cat) => (
             <Button
@@ -199,7 +190,6 @@ export const LayerList: React.FC = () => {
         </div>
       </div>
 
-      {/* Список слоев со скроллом */}
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
         {filteredIds.length === 0 ? (
           <div className="py-12 text-center text-muted-foreground space-y-2">
@@ -212,7 +202,6 @@ export const LayerList: React.FC = () => {
         )}
       </div>
 
-      {/* Нижний статус-бар */}
       <div className="p-2.5 border-t border-border bg-muted/40 text-[11px] text-muted-foreground flex items-center justify-between shrink-0">
         <span>
           Показано: {filteredIds.length} из {stats.total}

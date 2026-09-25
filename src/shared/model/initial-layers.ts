@@ -57,9 +57,6 @@ export const INITIAL_PRIMARY_LAYERS_RECORD: Record<string, LayerState> = PRIMARY
 
 export const INITIAL_PRIMARY_LAYER_IDS = PRIMARY_LAYERS.map((l) => l.id)
 
-/**
- * Генератор масштабируемого каталога слоев (для проверки производительности 5 -> 100+ слоев)
- */
 export function generateLayersDataset(totalCount: number = 100): {
   layers: Record<string, LayerState>
   layerIds: string[]
