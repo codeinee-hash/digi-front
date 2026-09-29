@@ -4,17 +4,23 @@ import { MapLegend } from './map-legend'
 import { MapViewerLayout } from './map-viewer-layout'
 import { Button } from '@/shared/ui/button'
 import { Badge } from '@/shared/ui/badge'
-import { ZoomIn, ZoomOut, RotateCcw, Compass, Grid, Crosshair, MapPin } from 'lucide-react'
+import { ZoomIn, ZoomOut, RotateCcw, Compass, Grid, Crosshair, MapPin, Radio } from 'lucide-react'
 
-export const MapCanvas: React.FC = () => {
+export interface MapCanvasProps {
+  timeline?: React.ReactNode
+}
+
+export const MapCanvas: React.FC<MapCanvasProps> = ({ timeline }) => {
   const {
     canvasRef,
     containerRef,
     zoom,
     showGrid,
     cursorCoords,
+    isStationHovered,
     handleMouseMove,
     handleMouseLeave,
+    handleMapClick,
     zoomIn,
     zoomOut,
     resetZoom,
@@ -26,6 +32,8 @@ export const MapCanvas: React.FC = () => {
       containerRef={containerRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
+      onClick={handleMapClick}
+      timeline={timeline}
       hud={
         <>
           <Badge
@@ -44,6 +52,15 @@ export const MapCanvas: React.FC = () => {
           >
             <MapPin className="size-3 text-sky-500" />
             <span>Чуйский регион, КР</span>
+          </Badge>
+
+          <Badge
+            variant="outline"
+            className="bg-primary/10 border-primary/30 text-primary text-xs gap-1 shadow-md px-2.5 py-1 hidden sm:flex cursor-pointer"
+            onClick={handleMapClick}
+          >
+            <Radio className="size-3 text-primary animate-pulse" />
+            <span>3D SatCom Teleport (Active)</span>
           </Badge>
         </>
       }
@@ -105,7 +122,12 @@ export const MapCanvas: React.FC = () => {
       }
       legend={<MapLegend />}
     >
-      <canvas ref={canvasRef} className="absolute inset-0 block w-full h-full cursor-crosshair" />
+      <canvas
+        ref={canvasRef}
+        className={`absolute inset-0 block w-full h-full ${
+          isStationHovered ? 'cursor-pointer' : 'cursor-crosshair'
+        }`}
+      />
     </MapViewerLayout>
   )
 }

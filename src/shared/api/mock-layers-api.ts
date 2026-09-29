@@ -4,6 +4,7 @@ export interface FetchLayerOptions {
   signal?: AbortSignal
   delayMs?: number
   forceError?: boolean
+  timestamp?: string
 }
 
 const GRADIENTS: Record<string, string[]> = {
@@ -17,7 +18,12 @@ export async function fetchLayerMock(
   layerId: string,
   options: FetchLayerOptions = {}
 ): Promise<LayerDataPayload> {
-  const { signal, delayMs = Math.floor(Math.random() * 500) + 700, forceError = false } = options
+  const {
+    signal,
+    delayMs = Math.floor(Math.random() * 250) + 200,
+    forceError = false,
+    timestamp = new Date().toISOString(),
+  } = options
 
   if (signal?.aborted) {
     throw new DOMException('The user aborted a request.', 'AbortError')
@@ -58,7 +64,7 @@ export async function fetchLayerMock(
 
   return {
     layerId,
-    timestamp: new Date().toISOString(),
+    timestamp,
     gridResolution: '0.05° x 0.05° (~5.5 км)',
     featuresCount: Math.floor(Math.random() * 1500) + 2400,
     min: layerId === 'layer-temperature' ? -15 : layerId === 'layer-wind' ? 0 : 120,

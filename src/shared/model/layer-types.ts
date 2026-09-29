@@ -48,4 +48,10 @@ export interface LayersStoreState {
   searchQuery: string
   selectedCategory: LayerCategory | 'all'
   simulateErrors: boolean
+  selectedTimestamp: string
+  timestamps: string[]
+  isPlaying: boolean
+  playbackSpeed: number
+  isAnalyticsOpen: boolean
+  selectedStationId: string | null
 }

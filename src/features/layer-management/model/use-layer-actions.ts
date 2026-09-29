@@ -61,6 +61,41 @@ export function useLayerActions() {
     [store]
   )
 
+  const setSelectedTimestamp = useCallback(
+    (timestamp: string) => {
+      layerActions.setSelectedTimestamp(store, timestamp)
+    },
+    [store]
+  )
+
+  const setPlayback = useCallback(
+    (isPlaying: boolean) => {
+      layerActions.setPlayback(store, isPlaying)
+    },
+    [store]
+  )
+
+  const stepTimeline = useCallback(
+    (direction: 1 | -1) => {
+      layerActions.stepTimeline(store, direction)
+    },
+    [store]
+  )
+
+  const toggleAnalyticsDrawer = useCallback(
+    (isOpen?: boolean) => {
+      layerActions.toggleAnalyticsDrawer(store, isOpen)
+    },
+    [store]
+  )
+
+  const selectStation = useCallback(
+    (stationId: string | null) => {
+      layerActions.selectStation(store, stationId)
+    },
+    [store]
+  )
+
   return {
     toggleLayer,
     retryLayer,
@@ -70,5 +105,10 @@ export function useLayerActions() {
     toggleSimulateErrors,
     switchDatasetMode,
     batchToggleAll,
+    setSelectedTimestamp,
+    setPlayback,
+    stepTimeline,
+    toggleAnalyticsDrawer,
+    selectStation,
   }
 }

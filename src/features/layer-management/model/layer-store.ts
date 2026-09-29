@@ -5,6 +5,7 @@ import {
   INITIAL_PRIMARY_LAYER_IDS,
   generateLayersDataset,
 } from '@/shared/model/initial-layers'
+import { TIMESTAMPS } from '@/shared/model/timeline-types'
 import { fetchLayerMock } from '@/shared/api/mock-layers-api'
 import { layerAbortManager, isAbortError } from '@/shared/lib/abort-manager'
 
@@ -19,6 +20,12 @@ const initialStoreState: ExtendedLayersStoreState = {
   selectedCategory: 'all',
   simulateErrors: false,
   datasetMode: '3-layers',
+  selectedTimestamp: '12:00',
+  timestamps: [...TIMESTAMPS],
+  isPlaying: false,
+  playbackSpeed: 1200,
+  isAnalyticsOpen: false,
+  selectedStationId: 'digi-teleport-01',
 }
 
 export const {
@@ -70,6 +77,7 @@ export const layerActions = {
     fetchLayerMock(layerId, {
       signal,
       forceError: store.get().simulateErrors,
+      timestamp: store.get().selectedTimestamp,
     })
       .then((data) => {
         if (!layerAbortManager.isLatestRequest(layerId, requestId)) return
@@ -139,6 +147,7 @@ export const layerActions = {
     fetchLayerMock(layerId, {
       signal,
       forceError: store.get().simulateErrors,
+      timestamp: store.get().selectedTimestamp,
     })
       .then((data) => {
         if (!layerAbortManager.isLatestRequest(layerId, requestId)) return
@@ -238,5 +247,94 @@ export const layerActions = {
     state.layerIds.forEach((id) => {
       layerActions.toggleLayer(store, id, enable)
     })
+  },
+
+  setSelectedTimestamp: (store: ReturnType<typeof useLayersStore>, timestamp: string) => {
+    store.dispatch({ selectedTimestamp: timestamp })
+    const state = store.get()
+    state.layerIds.forEach((id) => {
+      const layer = state.layers[id]
+      if (layer && layer.isEnabled) {
+        const { signal, requestId } = layerAbortManager.beginRequest(id)
+        store.dispatch((s) => ({
+          layers: {
+            ...s.layers,
+            [id]: {
+              ...s.layers[id],
+              status: { type: 'loading', startedAt: Date.now() },
+            },
+          },
+        }))
+
+        fetchLayerMock(id, {
+          signal,
+          forceError: store.get().simulateErrors,
+          timestamp,
+        })
+          .then((data) => {
+            if (!layerAbortManager.isLatestRequest(id, requestId)) return
+            if (!store.get().layers[id]?.isEnabled) return
+
+            store.dispatch((s) => ({
+              layers: {
+                ...s.layers,
+                [id]: {
+                  ...s.layers[id],
+                  status: {
+                    type: 'success',
+                    loadedAt: Date.now(),
+                    dataPointsCount: data.featuresCount,
+                  },
+                  data,
+                },
+              },
+            }))
+          })
+          .catch((error: unknown) => {
+            if (isAbortError(error)) return
+            if (!layerAbortManager.isLatestRequest(id, requestId)) return
+
+            const errorMessage =
+              error instanceof Error ? error.message : 'Неизвестная ошибка загрузки геослоя'
+
+            store.dispatch((s) => ({
+              layers: {
+                ...s.layers,
+                [id]: {
+                  ...s.layers[id],
+                  status: {
+                    type: 'error',
+                    message: errorMessage,
+                    canRetry: true,
+                    failedAt: Date.now(),
+                  },
+                },
+              },
+            }))
+          })
+      }
+    })
+  },
+
+  setPlayback: (store: ReturnType<typeof useLayersStore>, isPlaying: boolean) => {
+    store.dispatch({ isPlaying })
+  },
+
+  stepTimeline: (store: ReturnType<typeof useLayersStore>, direction: 1 | -1) => {
+    const state = store.get()
+    const currentIndex = state.timestamps.indexOf(state.selectedTimestamp)
+    if (currentIndex === -1) return
+    const nextIndex = (currentIndex + direction + state.timestamps.length) % state.timestamps.length
+    layerActions.setSelectedTimestamp(store, state.timestamps[nextIndex])
+  },
+
+  toggleAnalyticsDrawer: (store: ReturnType<typeof useLayersStore>, isOpen?: boolean) => {
+    store.dispatch((s) => ({
+      isAnalyticsOpen: typeof isOpen === 'boolean' ? isOpen : !s.isAnalyticsOpen,
+    }))
+  },
+
+  selectStation: (store: ReturnType<typeof useLayersStore>, stationId: string | null) => {
+    store.dispatch({ selectedStationId: stationId })
   },
 }

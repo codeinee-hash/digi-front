@@ -4,10 +4,12 @@ export function AppLayout({
   header,
   sidebar,
   children,
+  drawer,
 }: {
   header: React.ReactNode
   sidebar: React.ReactNode
   children: React.ReactNode
+  drawer?: React.ReactNode
 }) {
   return (
     <div className="flex flex-col h-screen w-screen overflow-hidden bg-background text-foreground font-sans antialiased">
@@ -20,6 +22,7 @@ export function AppLayout({
           {children}
         </section>
       </main>
+      {drawer}
     </div>
   )
 }
