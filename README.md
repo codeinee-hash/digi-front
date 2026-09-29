@@ -2,6 +2,9 @@
 
 Интерактивное веб-приложение для управления геопространственными слоями с суточным таймлайном, аналитикой на Recharts, 3D-объектом связи и защитой от race conditions.
 
+- **Демо онлайн:** [https://digi-front-zeta.vercel.app](https://digi-front-zeta.vercel.app)
+- **Репозиторий:** [https://github.com/codeinee-hash/digi-front](https://github.com/codeinee-hash/digi-front)
+
 ---
 
 ## Ответы на вопросы задания
