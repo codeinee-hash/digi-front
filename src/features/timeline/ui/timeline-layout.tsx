@@ -1,12 +1,12 @@
 import React from 'react'
 
-export interface TimelineLayoutProps {
+export interface Props {
   controls: React.ReactNode
   scrubber: React.ReactNode
   status: React.ReactNode
 }
 
-export function TimelineLayout({ controls, scrubber, status }: TimelineLayoutProps) {
+export function TimelineLayout({ controls, scrubber, status }: Props) {
   return (
     <div className="flex flex-col gap-2 rounded-xl border border-border/80 bg-card/90 backdrop-blur-md p-3 shadow-lg">
       <div className="flex items-center justify-between gap-3">

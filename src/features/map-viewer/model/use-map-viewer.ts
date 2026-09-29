@@ -111,7 +111,8 @@ export function useMapViewer() {
 
       layerIds.forEach((id) => {
         const layer = layers[id]
-        if (!layer || !layer.isEnabled || layer.status.type !== 'success') return
+        if (!layer || !layer.isEnabled) return
+        if (layer.status.type !== 'success' && !layer.data) return
 
         const alpha = Math.max(0, Math.min(1, layer.opacity / 100))
         ctx.save()
@@ -182,29 +183,27 @@ export function useMapViewer() {
             }
           })
         } else if (id === 'layer-insolation') {
-          const solarIntensity = Math.min(1, currentMetrics.insolation / 960)
+          const solarIntensity = Math.min(1, Math.max(0.35, currentMetrics.insolation / 960))
+          ctx.globalCompositeOperation = 'lighter'
+          const sunX = width * 0.65
+          const sunY = height * 0.35
+          const sunRadius = width * 0.38 * (0.6 + solarIntensity * 0.4)
 
-          if (solarIntensity > 0.05) {
-            ctx.globalCompositeOperation = 'lighter'
-            const sunX = width * 0.62
-            const sunY = height * 0.32
-            const sunRadius = width * 0.42 * solarIntensity
+          const sunGrad = ctx.createRadialGradient(sunX, sunY, 12, sunX, sunY, sunRadius)
+          sunGrad.addColorStop(0, `rgba(251, 191, 36, ${0.9 * solarIntensity})`)
+          sunGrad.addColorStop(0.35, `rgba(245, 158, 11, ${0.65 * solarIntensity})`)
+          sunGrad.addColorStop(0.7, `rgba(217, 119, 6, ${0.3 * solarIntensity})`)
+          sunGrad.addColorStop(1, 'rgba(180, 83, 9, 0)')
+          ctx.fillStyle = sunGrad
+          ctx.fillRect(0, 0, width, height)
 
-            const sunGrad = ctx.createRadialGradient(sunX, sunY, 10, sunX, sunY, sunRadius)
-            sunGrad.addColorStop(0, `rgba(251, 191, 36, ${0.85 * solarIntensity})`)
-            sunGrad.addColorStop(0.4, `rgba(245, 158, 11, ${0.5 * solarIntensity})`)
-            sunGrad.addColorStop(1, 'rgba(180, 83, 9, 0)')
-            ctx.fillStyle = sunGrad
-            ctx.fillRect(0, 0, width, height)
-
-            for (let r = 70; r < 240; r += 45) {
-              ctx.strokeStyle = `rgba(253, 230, 138, ${0.25 * solarIntensity})`
-              ctx.setLineDash([4, 6])
-              ctx.beginPath()
-              ctx.arc(sunX, sunY, r * solarIntensity, 0, Math.PI * 2)
-              ctx.stroke()
-              ctx.setLineDash([])
-            }
+          for (let r = 70; r < 240; r += 45) {
+            ctx.strokeStyle = `rgba(253, 230, 138, ${0.28 * solarIntensity})`
+            ctx.setLineDash([4, 6])
+            ctx.beginPath()
+            ctx.arc(sunX, sunY, r * (0.7 + solarIntensity * 0.3), 0, Math.PI * 2)
+            ctx.stroke()
+            ctx.setLineDash([])
           }
         } else {
           ctx.fillStyle = 'rgba(34, 197, 94, 0.2)'

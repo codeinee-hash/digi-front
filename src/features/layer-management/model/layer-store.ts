@@ -256,15 +256,17 @@ export const layerActions = {
       const layer = state.layers[id]
       if (layer && layer.isEnabled) {
         const { signal, requestId } = layerAbortManager.beginRequest(id)
-        store.dispatch((s) => ({
-          layers: {
-            ...s.layers,
-            [id]: {
-              ...s.layers[id],
-              status: { type: 'loading', startedAt: Date.now() },
+        if (!layer.data) {
+          store.dispatch((s) => ({
+            layers: {
+              ...s.layers,
+              [id]: {
+                ...s.layers[id],
+                status: { type: 'loading', startedAt: Date.now() },
+              },
             },
-          },
-        }))
+          }))
+        }
 
         fetchLayerMock(id, {
           signal,
