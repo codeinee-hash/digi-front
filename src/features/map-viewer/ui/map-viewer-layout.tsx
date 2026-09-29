@@ -39,16 +39,16 @@ export function MapViewerLayout({
         </div>
       )}
 
-      {cursor && <div className="absolute bottom-28 left-4 z-10 pointer-events-none">{cursor}</div>}
+      {cursor && <div className="absolute bottom-36 left-4 z-10 pointer-events-none">{cursor}</div>}
 
       {controls && (
         <div className="absolute top-4 right-4 z-10 flex flex-col gap-1.5">{controls}</div>
       )}
 
-      {legend && <div className="absolute bottom-28 right-4 z-10">{legend}</div>}
+      {legend && <div className="absolute bottom-36 right-4 z-10">{legend}</div>}
 
       {timeline && (
-        <div className="absolute bottom-4 left-4 right-4 sm:left-6 sm:right-6 md:left-8 md:right-8 max-w-2xl mx-auto z-20 pointer-events-auto">
+        <div className="absolute bottom-3 inset-x-0 mx-auto px-4 max-w-xl z-20 pointer-events-auto">
           {timeline}
         </div>
       )}

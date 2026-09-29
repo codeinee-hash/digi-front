@@ -54,6 +54,18 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({ timeline }) => {
             <span>Чуйский регион, КР</span>
           </Badge>
 
+          {cursorCoords && (
+            <Badge
+              variant="secondary"
+              className="bg-background/90 backdrop-blur-md border border-border/80 text-foreground text-xs gap-1.5 font-mono shadow-md px-2.5 py-1"
+            >
+              <Crosshair className="size-3 text-primary" />
+              <span>
+                {cursorCoords.lat}° N, {cursorCoords.lon}° E
+              </span>
+            </Badge>
+          )}
+
           <Badge
             variant="outline"
             className="bg-primary/10 border-primary/30 text-primary text-xs gap-1 shadow-md px-2.5 py-1 hidden sm:flex cursor-pointer"
@@ -63,18 +75,6 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({ timeline }) => {
             <span>3D SatCom Teleport (Active)</span>
           </Badge>
         </>
-      }
-      cursor={
-        cursorCoords && (
-          <Badge
-            variant="secondary"
-            className="bg-background/90 backdrop-blur-md border border-border/80 text-foreground text-xs gap-2 font-mono shadow-md px-3 py-1"
-          >
-            <Crosshair className="size-3 text-primary" />
-            <span>Lat: {cursorCoords.lat}° N</span>
-            <span>Lon: {cursorCoords.lon}° E</span>
-          </Badge>
-        )
       }
       controls={
         <div className="bg-background/90 backdrop-blur-md border border-border/80 rounded-lg p-1 shadow-lg flex flex-col gap-1">
